@@ -1,6 +1,8 @@
 import { PrismaClient, Product } from "@prisma/client";
 import WhatsAppButton from "../src/components/WhatsAppButton";
 
+export const dynamic = "force-dynamic";
+
 const prisma = new PrismaClient();
 
 export default async function Home() {
