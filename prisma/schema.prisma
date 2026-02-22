@@ -12,7 +12,7 @@ model Product {
   name        String
   description String
   price       Int
-  imageUrl    String
+  imageUrls   String[] // <-- UBAH BAGIAN INI
   
   category    String   @default("Sprei Polos") // <-- TAMBAHKAN BARIS INI
   size        String   @default("King")        // <-- TAMBAHKAN BARIS INI
