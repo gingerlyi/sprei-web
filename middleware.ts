@@ -1,22 +1,22 @@
+// File: middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Fungsi ini akan dijalankan Next.js setiap kali ada perpindahan halaman
 export function middleware(request: NextRequest) {
-  // 1. Mengecek apakah pengguna sedang mencoba mengakses folder /admin
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    
-    // 2. Mengecek apakah mereka punya tiket (cookie) bernama 'admin_logged_in'
-    let cookie = request.cookies.get('admin_logged_in')
-    
-    // 3. Jika tidak punya tiket, usir kembali ke halaman /login
-    if (!cookie || cookie.value !== 'true') {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
+  // Mengecek apakah pengunjung membawa "Kartu Akses" (Cookie isLoggedIn)
+  const isLoggedIn = request.cookies.get('isLoggedIn');
+
+  // Jika mencoba masuk ke folder /admin tapi TIDAK punya kartu akses
+  if (request.nextUrl.pathname.startsWith('/admin') && !isLoggedIn) {
+    // Tendang (Redirect) kembali ke halaman rahasia Anda
+    return NextResponse.redirect(new URL('/spreiwiwik', request.url));
   }
+
+  // Jika aman, persilakan lewat
+  return NextResponse.next();
 }
 
-// Menentukan halaman mana saja yang dijaga oleh satpam ini
+// Beritahu satpam rute mana saja yang harus dijaga ketat
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: '/admin/:path*', 
 }

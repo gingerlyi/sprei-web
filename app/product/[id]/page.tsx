@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import prisma from "../../../lib/prisma";
 import ProductGallery from "./ProductGallery";
+import Navbar from "../../Navbar";
 
 export const dynamic = "force-dynamic";
 
@@ -14,61 +15,86 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
   if (!product) return notFound();
 
-  const waNumber = "6281234567890"; // GANTI NOMOR WA
+  const waNumber = "6281234567890"; // GANTI NOMOR WA ANDA DI SINI
   const message = `Halo SpreiKu!\n\nSaya ingin memesan:\n*${product.name}*\nHarga: Rp${product.price.toLocaleString("id-ID")}\n\nApakah stoknya masih tersedia?`;
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-  const originalPrice = Math.round(product.price / 0.6);
+
+  // Menentukan apakah stok sudah habis
+  const isOutOfStock = product.stock <= 0;
 
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 selection:bg-gray-200">
       
-      <header className="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
-          <Link href="/" className="text-2xl md:text-3xl font-black tracking-tighter uppercase">Sprei<span className="text-gray-400">Ku</span>.</Link>
-          <nav className="hidden md:flex gap-8 text-sm font-medium">
-            <Link href="/" className="hover:text-gray-500 transition-colors">Beranda</Link>
-            <Link href="/katalog" className="hover:text-gray-500 transition-colors">Katalog</Link>
-            <Link href="/#tentang-kami" className="hover:text-gray-500 transition-colors">Tentang Kami</Link>
-          </nav>
-        </div>
-      </header>
+      {/* Memanggil Komponen Navbar Pintar */}
+      <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6 pt-28 pb-12">
-        <div className="flex gap-2 text-sm text-gray-500 mb-10 font-medium items-center">
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+        <div className="flex gap-2 text-[10px] text-gray-400 mb-8 font-bold items-center uppercase tracking-widest">
           <Link href="/" className="hover:text-black transition-colors">Beranda</Link> <span className="text-gray-300">&gt;</span> 
           <Link href="/katalog" className="hover:text-black transition-colors">Katalog</Link> <span className="text-gray-300">&gt;</span> 
           <span className="text-black">{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           
           <ProductGallery images={product.imageUrls} productName={product.name} />
 
-          <div className="flex flex-col pt-2 lg:pt-0">
-            {/* RATING DIHAPUS, MARGIN DISESUAIKAN */}
-            <h1 className="text-4xl md:text-5xl lg:text-[2.75rem] font-black uppercase tracking-tighter mb-4 leading-none">{product.name}</h1>
+          <div className="flex flex-col pt-1 lg:pt-0">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-tighter mb-3 leading-none text-black">
+              {product.name}
+            </h1>
             
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-3xl md:text-4xl font-bold">Rp{product.price.toLocaleString("id-ID")}</span>
-              <span className="text-3xl md:text-4xl text-gray-300 font-bold line-through">Rp{originalPrice.toLocaleString("id-ID")}</span>
-              <span className="bg-[#FF3333]/10 text-[#FF3333] px-4 py-1.5 rounded-full text-sm font-bold ml-2">-40%</span>
+            <div className="flex items-center gap-4 mb-4">
+              <span className="text-2xl md:text-3xl font-bold text-black">
+                Rp{product.price.toLocaleString("id-ID")}
+              </span>
+            </div>
+
+            {/* INDIKATOR STOK BARANG */}
+            <div className="mb-6">
+              {isOutOfStock ? (
+                <span className="bg-red-50 border border-red-200 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-600"></span> Stok Habis
+                </span>
+              ) : (
+                <span className="text-sm font-medium text-gray-600">
+                  Tersedia: <span className="font-bold text-black">{product.stock} stok</span>
+                </span>
+              )}
             </div>
             
-            <p className="text-gray-500 text-base leading-relaxed pb-8 border-b border-gray-200">{product.description}</p>
+            <p className="text-gray-500 text-sm leading-relaxed pb-6 border-b border-gray-200">
+              {product.description}
+            </p>
             
-            <div className="py-6 border-b border-gray-200">
-              <h3 className="text-gray-500 mb-4 font-medium">Ukuran Tersedia</h3>
-              <div className="flex flex-wrap gap-3">
-                <div className="px-6 py-3 rounded-full bg-black text-white font-medium cursor-pointer uppercase text-sm">{product.size}</div>
+            <div className="py-5 border-b border-gray-200">
+              <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Ukuran Terpilih</h3>
+              <div className="flex flex-wrap gap-2">
+                <div className="px-5 py-2.5 rounded-xl border-2 border-black bg-white text-black font-bold uppercase text-xs shadow-sm">
+                  {product.size}
+                </div>
               </div>
             </div>
             
-            <div className="pt-6 mt-auto flex items-center gap-4">
-              <div className="flex items-center justify-between bg-[#F0F0F0] rounded-full px-5 py-4 w-32 flex-shrink-0">
-                <button className="text-2xl font-medium hover:text-gray-500 transition-colors">−</button><span className="font-medium">1</span><button className="text-2xl font-medium hover:text-gray-500 transition-colors">+</button>
+            <div className="pt-6 mt-auto flex items-center gap-3">
+              <div className="flex items-center justify-between bg-[#F0F0F0] rounded-xl px-4 py-3.5 w-28 flex-shrink-0">
+                <button className="text-xl font-medium hover:text-gray-500 transition-colors">−</button>
+                <span className="text-sm font-bold">1</span>
+                <button className="text-xl font-medium hover:text-gray-500 transition-colors">+</button>
               </div>
-              <a href={waLink} target="_blank" className="flex-1 bg-black text-white py-4 rounded-full text-base font-medium flex items-center justify-center hover:bg-gray-800 hover:shadow-xl transition-all">Pesan Sekarang</a>
+              
+              {/* LOGIKA TOMBOL MATI JIKA STOK KOSONG */}
+              {isOutOfStock ? (
+                <button disabled className="flex-1 bg-gray-100 text-gray-400 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center cursor-not-allowed">
+                  Barang Kosong
+                </button>
+              ) : (
+                <a href={waLink} target="_blank" className="flex-1 bg-black text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center hover:bg-gray-800 hover:shadow-xl transition-all">
+                  Pesan Sekarang
+                </a>
+              )}
             </div>
+
           </div>
         </div>
       </div>

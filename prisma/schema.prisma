@@ -1,10 +1,11 @@
-datasource db {
-  provider = "postgresql" // Ganti dari "sqlite" menjadi "postgresql"
-  url      = env("DATABASE_URL")
-}
-
+// File: prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Product {
@@ -12,11 +13,12 @@ model Product {
   name        String
   description String
   price       Int
-  imageUrls   String[] // <-- UBAH BAGIAN INI
+  stock       Int      @default(0) // <-- INI TAMBAHANNYA
+  imageUrls   String[] 
   
-  category    String   @default("Sprei Polos") // <-- TAMBAHKAN BARIS INI
-  size        String   @default("King")        // <-- TAMBAHKAN BARIS INI
+  category    String   @default("Sprei Polos")
+  size        String   @default("King")
   
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  updatedAt   DateTime @updatedAt
 }

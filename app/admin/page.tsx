@@ -20,13 +20,14 @@ export default async function AdminPage() {
     }
 
     if (finalImageUrls.length === 0) {
-      finalImageUrls.push("https://via.placeholder.com/400x500?text=No+Image");
+      finalImageUrls.push("https://via.placeholder.com/400x400?text=No+Image");
     }
 
     await prisma.product.create({
       data: {
         name: formData.get("name") as string,
         price: parseInt(formData.get("price") as string),
+        stock: parseInt(formData.get("stock") as string), // <-- Simpan Stok
         imageUrls: finalImageUrls,
         category: formData.get("category") as string,
         size: formData.get("size") as string,
@@ -45,6 +46,7 @@ export default async function AdminPage() {
     let updateData: any = {
       name: formData.get("name") as string,
       price: parseInt(formData.get("price") as string),
+      stock: parseInt(formData.get("stock") as string), // <-- Update Stok
       category: formData.get("category") as string,
       size: formData.get("size") as string,
       description: formData.get("description") as string,
